@@ -4,6 +4,8 @@ const navigation = document.querySelector(".primary-nav");
 const backToTop = document.querySelector(".back-to-top");
 const toast = document.querySelector("#site-toast");
 const repoGrid = document.querySelector("#repo-grid");
+const repoFilters = document.querySelector("#repo-filters");
+const repoSummary = document.querySelector("#repo-summary");
 
 window.addEventListener("load", () => {
   window.setTimeout(() => document.body.classList.add("is-loaded"), 300);
@@ -90,22 +92,44 @@ const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => (
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
 })[character]);
 
+const formatUpdatedDate = (date) => new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "numeric"
+}).format(date);
+
 function renderRepositories(repositories) {
   if (!repositories.length) {
     repoGrid.innerHTML = '<div class="repo-error">No public repositories were returned by GitHub.</div>';
+    repoSummary.textContent = "No public repositories found.";
+    repoFilters.replaceChildren();
+    document.querySelector("#github-repo-count").textContent = "0";
+    document.querySelector("#github-language-count").textContent = "0";
     return;
   }
-  repoGrid.innerHTML = repositories.map((repo) => {
+  const validRepositories = repositories.filter((repo) =>
+    typeof repo.name === "string" &&
+    typeof repo.html_url === "string" &&
+    repo.full_name?.toLowerCase() === "sourabhpw/" + repo.name.toLowerCase()
+  );
+  const languages = [...new Set(validRepositories.map((repo) => repo.language).filter(Boolean))]
+    .sort((left, right) => left.localeCompare(right));
+  const categories = [...languages, ...(validRepositories.some((repo) => !repo.language) ? ["Not specified"] : [])];
+
+  repoGrid.innerHTML = validRepositories.map((repo) => {
     const repositoryUrl = new URL(repo.html_url);
-    const safeRepositoryUrl = repositoryUrl.protocol === "https:" && repositoryUrl.hostname === "github.com"
-      ? repositoryUrl.href
-      : "https://github.com/Sourabhpw";
-    const language = repo.language
-      ? `<span class="repo-language">${escapeHtml(repo.language)}</span>`
-      : "";
+    if (repositoryUrl.protocol !== "https:" || repositoryUrl.hostname !== "github.com" ||
+        repositoryUrl.pathname.toLowerCase() !== `/sourabhpw/${repo.name}`.toLowerCase()) {
+      return "";
+    }
+    const category = repo.language || "Not specified";
     const description = repo.description
-      ? escapeHtml(repo.description)
-      : "No description provided.";
+      ? `<p>${escapeHtml(repo.description)}</p>`
+      : '<p class="repo-no-description">No description provided on GitHub.</p>';
+    const updatedAt = repo.updated_at ? new Date(repo.updated_at) : null;
+    const updated = updatedAt && !Number.isNaN(updatedAt.valueOf())
+      ? `<span title="${escapeHtml(updatedAt.toISOString())}">Updated ${escapeHtml(formatUpdatedDate(updatedAt))}</span>`
+      : "";
     const forkBadge = repo.fork ? '<span class="repo-badge">FORK</span>' : "";
     const stars = Number.isFinite(repo.stargazers_count)
       ? `<span>★ ${repo.stargazers_count}</span>`
@@ -113,25 +137,69 @@ function renderRepositories(repositories) {
     const forks = Number.isFinite(repo.forks_count)
       ? `<span>⑂ ${repo.forks_count}</span>`
       : "";
-    return `<article class="repo-card">
-      <div class="repo-title-row"><a class="repo-name" href="${escapeHtml(safeRepositoryUrl)}" target="_blank" rel="noreferrer">${escapeHtml(repo.name)} <span class="repo-external">↗</span></a>${forkBadge}</div>
-      <p>${description}</p>
-      <div class="repo-meta">${language}${stars}${forks}</div>
+    const monogram = repo.name.slice(0, 2).toUpperCase();
+    return `<article class="repo-card project-repo-card" data-category="${escapeHtml(category)}">
+      <div class="repo-card-top"><span class="repo-monogram" aria-hidden="true">${escapeHtml(monogram)}</span><span class="repo-category">${escapeHtml(category)}</span>${forkBadge}</div>
+      <div class="repo-title-row"><a class="repo-name" href="${escapeHtml(repositoryUrl.href)}" target="_blank" rel="noreferrer">${escapeHtml(repo.name)} <span class="repo-external">↗</span></a></div>
+      ${description}
+      <div class="repo-meta">${repo.language ? `<span class="repo-language">${escapeHtml(repo.language)}</span>` : '<span>Language not detected</span>'}${stars}${forks}${updated}</div>
+      <a class="repo-source-button" href="${escapeHtml(repositoryUrl.href)}" target="_blank" rel="noreferrer">View source code <span aria-hidden="true">↗</span></a>
     </article>`;
   }).join("");
+  const count = repoGrid.querySelectorAll(".project-repo-card").length;
+  const languageCount = [...new Set([...repoGrid.querySelectorAll(".project-repo-card")].map((card) =>
+    card.dataset.category
+  ).filter((language) => language !== "Not specified"))].length;
+  document.querySelector("#github-repo-count").textContent = String(count);
+  document.querySelector("#github-language-count").textContent = String(languageCount);
+  repoSummary.textContent = `Showing ${count} public ${count === 1 ? "repository" : "repositories"} · sorted by most recently updated`;
+
+  repoFilters.innerHTML = [
+    `<button class="repo-filter active" type="button" data-filter="all" aria-pressed="true">All <span>${count}</span></button>`,
+    ...categories.map((category) => {
+      const categoryCount = [...repoGrid.querySelectorAll(".project-repo-card")]
+        .filter((card) => card.dataset.category === category).length;
+      return `<button class="repo-filter" type="button" data-filter="${escapeHtml(category)}" aria-pressed="false">${escapeHtml(category)} <span>${categoryCount}</span></button>`;
+    })
+  ].join("");
 }
+
+repoFilters.addEventListener("click", (event) => {
+  const filter = event.target.closest(".repo-filter");
+  if (!filter) return;
+  repoFilters.querySelectorAll(".repo-filter").forEach((button) => {
+    const isActive = button === filter;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+  const selectedCategory = filter.dataset.filter;
+  repoGrid.querySelectorAll(".project-repo-card").forEach((card) => {
+    card.hidden = selectedCategory !== "all" && card.dataset.category !== selectedCategory;
+  });
+});
 
 async function loadRepositories() {
   repoGrid.innerHTML = '<div class="repo-loading"><span class="loading-spinner"></span> Fetching public repositories…</div>';
+  repoFilters.replaceChildren();
   try {
-    const response = await fetch("https://api.github.com/users/Sourabhpw/repos?per_page=100&sort=updated", {
-      headers: { Accept: "application/vnd.github+json" }
-    });
-    if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
-    const repositories = await response.json();
-    if (!Array.isArray(repositories)) throw new Error("Unexpected GitHub API response");
+    const repositories = [];
+    let url = "https://api.github.com/users/Sourabhpw/repos?per_page=100&sort=updated";
+    while (url) {
+      const response = await fetch(url, { headers: { Accept: "application/vnd.github+json" } });
+      if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
+      const page = await response.json();
+      if (!Array.isArray(page)) throw new Error("Unexpected GitHub API response");
+      repositories.push(...page);
+      const nextLink = (response.headers.get("Link") || "")
+        .split(",")
+        .find((link) => /rel="next"/.test(link));
+      url = nextLink ? nextLink.match(/<([^>]+)>/)?.[1] || null : null;
+    }
     renderRepositories(repositories);
   } catch (error) {
+    repoSummary.textContent = "Repository data is temporarily unavailable.";
+    document.querySelector("#github-repo-count").textContent = "—";
+    document.querySelector("#github-language-count").textContent = "—";
     repoGrid.innerHTML = '<div class="repo-error">Couldn’t load repository data. Check your connection or try again. <button type="button" id="repo-retry">Retry</button></div>';
     document.querySelector("#repo-retry").addEventListener("click", loadRepositories, { once: true });
   }

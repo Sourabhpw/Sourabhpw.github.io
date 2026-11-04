@@ -128,79 +128,29 @@
 
       <section class="section-shell section-block projects-section" id="projects">
         <div class="section-heading reveal">
-          <p class="eyebrow">03 / SELECTED WORK</p>
-          <h2>Ideas, made<br><span>tangible.</span></h2>
-          <p class="section-intro">A few engineering challenges I’m working through. Project repository links are intentionally left editable until the matching public repositories are confirmed.</p>
+          <p class="eyebrow">03 / PUBLIC REPOSITORIES</p>
+          <h2>Real work.<br><span>Open source.</span></h2>
+          <p class="section-intro">Every project below is fetched from my public GitHub repositories. Browse by the primary language GitHub reports, and open the source directly.</p>
         </div>
-        <div class="projects-list">
-          <article class="project-card reveal">
-            <div class="project-visual nexus-visual" aria-label="Illustrative service architecture diagram for Nexus">
-              <div class="visual-label">SYSTEM MAP <span>01 — CONCEPT</span></div>
-              <div class="architecture-map">
-                <div class="arch-node arch-client">CLIENT<br><small>React · Web</small></div><span class="arch-line"></span>
-                <div class="arch-node arch-api">API LAYER<br><small>Spring Boot</small></div>
-                <div class="arch-branches"><span></span><span></span><span></span></div>
-                <div class="arch-stores"><div class="arch-node">MYSQL</div><div class="arch-node">REDIS</div><div class="arch-node">SEARCH</div></div>
-              </div>
-              <span class="visual-caption">Illustrative architecture · not a product screenshot</span>
-            </div>
-            <div class="project-info">
-              <div class="project-meta"><span>01 / E-COMMERCE</span><span>JAVA · SPRING BOOT</span></div>
-              <h3>Nexus</h3><h4>Scalable high-performance e-commerce platform</h4>
-              <p>A full-stack commerce platform built with Java 21, Spring Boot 3.x, and MySQL. Designed around secure access, resilient workflows, and fast product discovery.</p>
-              <ul class="feature-list"><li>Product catalog and shopping cart</li><li>Multi-step checkout workflows</li><li>Spring Security, JWT, and role-based access</li><li>Redis caching, Elasticsearch, and Docker</li></ul>
-              <div class="project-tags"><span>Java 21</span><span>Spring Boot 3</span><span>MySQL</span><span>Redis</span><span>Elasticsearch</span><span>Docker</span></div>
-              <div class="project-links"><a class="placeholder-link" href="#contact" aria-label="Nexus repository placeholder, contact Sourabh for the project link">Repository link to be added <span>↗</span></a><span class="project-state"><i></i> REPOSITORY UNCONFIRMED</span></div>
-            </div>
-          </article>
-          <article class="project-card project-card-reverse reveal">
-            <div class="project-visual career-visual" aria-label="Illustrative modular application diagram for Careeronix">
-              <div class="visual-label">PRODUCT BLUEPRINT <span>02 — CONCEPT</span></div>
-              <div class="career-board">
-                <div class="career-sidebar"><b>c.</b><i></i><i></i><i></i></div>
-                <div class="career-main"><span class="mini-kicker">CAREERONIX / DASHBOARD</span><div class="career-title-line"></div><div class="career-widgets"><div><i></i><i></i><i></i></div><div><b>RESUME</b><span>ATS-ready profile</span><small>EDITOR MODULE</small></div></div><div class="career-track"><span></span><span></span><span></span><span></span></div></div>
-              </div>
-              <span class="visual-caption">Illustrative product concept · not a product screenshot</span>
-            </div>
-            <div class="project-info">
-              <div class="project-meta"><span>02 / CAREER TOOLS</span><span>MERN STACK</span></div>
-              <h3>Careeronix</h3><h4>AI resume &amp; career guidance portal</h4>
-              <p>An end-to-end career guidance platform to help job seekers create ATS-oriented resumes and manage their career applications.</p>
-              <ul class="feature-list"><li>Resume builder and career guidance</li><li>Candidate dashboard and REST API integration</li><li>Database indexing and validation</li><li>Modular React components</li></ul>
-              <div class="project-tags"><span>React.js</span><span>Node.js</span><span>Express.js</span><span>MongoDB</span><span>REST API</span></div>
-              <div class="project-links"><a class="placeholder-link" href="#contact" aria-label="Careeronix repository placeholder, contact Sourabh for the project link">Repository link to be added <span>↗</span></a><span class="project-state"><i></i> REPOSITORY UNCONFIRMED</span></div>
-            </div>
-          </article>
-          <article class="project-card reveal">
-            <div class="project-visual artveda-visual" aria-label="Illustrative interior portfolio content model diagram for Artveda Interiors">
-              <div class="visual-label">CONTENT MODEL <span>03 — CONCEPT</span></div>
-              <div class="artveda-board"><div class="artveda-image artveda-one"></div><div class="artveda-image artveda-two"></div><div class="artveda-image artveda-three"></div><div class="artveda-caption"><span>CURATED SPACES</span><b>Spaces with a point of view.</b><i>Portfolio · Services · Inquiries</i></div></div>
-              <span class="visual-caption">Illustrative content model · not a product screenshot</span>
-            </div>
-            <div class="project-info">
-              <div class="project-meta"><span>03 / CREATIVE PORTFOLIO</span><span>WEB APPLICATION</span></div>
-              <h3>Artveda Interiors</h3><h4>Web application &amp; portfolio management</h4>
-              <p>An interactive web application for showcasing interior design portfolios and service packages, with a way to manage client inquiries.</p>
-              <ul class="feature-list"><li>Portfolio showcase and service management</li><li>Administrative dashboard</li><li>Dynamic asset management</li><li>SQL optimization with MySQL and JDBC</li></ul>
-              <div class="project-tags"><span>Java</span><span>JDBC</span><span>MySQL</span><span>SQL</span><span>Web application</span></div>
-              <div class="project-links"><a class="placeholder-link" href="#contact" aria-label="Artveda Interiors repository placeholder, contact Sourabh for the project link">Repository link to be added <span>↗</span></a><span class="project-state"><i></i> REPOSITORY UNCONFIRMED</span></div>
-            </div>
-          </article>
+        <div class="repo-summary" id="repo-summary" aria-live="polite">Loading public repositories from GitHub…</div>
+        <div class="repo-filters" id="repo-filters" role="group" aria-label="Filter repositories by programming language"></div>
+        <div class="repo-grid project-repo-grid" id="repo-grid" aria-live="polite">
+          <div class="repo-loading"><span class="loading-spinner"></span> Fetching public repositories…</div>
         </div>
       </section>
 
       <section class="section-shell section-block github-section" id="github">
         <div class="github-heading reveal">
-          <div><p class="eyebrow">04 / OPEN SOURCE &amp; PUBLIC WORK</p><h2>Work in the<br><span>open.</span></h2></div>
+          <div><p class="eyebrow">04 / LIVE FROM GITHUB</p><h2>One profile.<br><span>Every project.</span></h2></div>
           <a class="button button-outline" href="https://github.com/Sourabhpw" target="_blank" rel="noreferrer">Visit GitHub profile <span>↗</span></a>
         </div>
-        <div class="github-summary reveal">
-          <div class="github-mark" aria-hidden="true">GH</div><div><strong>Recent public repositories</strong><p>Loaded directly from GitHub’s public API. Stars and forks reflect the live repository data.</p></div><span class="live-indicator"><i></i> LIVE DATA</span>
+        <div class="github-dashboard reveal">
+          <div class="github-dashboard-mark" aria-hidden="true">GH</div>
+          <div class="github-dashboard-copy"><p class="eyebrow">PUBLIC REPOSITORIES</p><strong id="github-repo-count">—</strong><span>repositories available from GitHub</span></div>
+          <div class="github-dashboard-copy"><p class="eyebrow">LANGUAGES</p><strong id="github-language-count">—</strong><span>primary languages reported</span></div>
+          <p class="github-dashboard-note">Updated automatically from GitHub’s public API each time this page loads. Repository names, descriptions, source links, language, update dates, stars, and forks are shown only when provided by GitHub.</p>
         </div>
-        <div class="repo-grid" id="repo-grid" aria-live="polite">
-          <div class="repo-loading"><span class="loading-spinner"></span> Fetching public repositories…</div>
-        </div>
-        <p class="github-footnote">Repository data provided by the GitHub public API. Contribution activity is not displayed because an accurate activity feed is not available from this public endpoint.</p>
+        <p class="github-footnote">Repositories without a GitHub description or detected primary language are labeled as such. No project details or contribution statistics are invented.</p>
       </section>
 
       <section class="section-shell section-block journey-section" id="education">
